@@ -18,6 +18,31 @@ def index(request):
 def entry(request, title):
     content = convertMd(title)
     if content == None:
-        return render(request,"encyclopedia/errorpage.html")
+        return render(request,"encyclopedia/errorpage.html",{
+            "message":"That content doesn't exist"
+        })
     else:
-        return render(request,"encyclopedia/content.html")
+        return render(request,"encyclopedia/content.html",{
+            "title":title,
+            "content":content
+        })
+        
+def search(request):
+    
+    if request.method == "POST":
+        entry= request.POST['q']
+        content = convertMd(entry)
+        if content is not None:
+            return render(request,"encyclopedia/content.html",{
+            "title":entry,
+            "content":content
+        })
+        else:
+            entries=util.list_entries()
+            recommended = []
+            for i in entries:
+                if entry.lower() in i.lower():
+                    recommended.append(i)
+            return render(request,"encyclopedia/search.html" ,{
+                "recommended":recommended
+            })
