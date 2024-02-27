@@ -28,7 +28,6 @@ def entry(request, title):
         })
         
 def search(request):
-    
     if request.method == "POST":
         entry= request.POST['q']
         content = convertMd(entry)
@@ -46,3 +45,22 @@ def search(request):
             return render(request,"encyclopedia/search.html" ,{
                 "recommended":recommended
             })
+
+def new_page(request):
+    if request.method == "GET":
+        return render(request,"encyclopedia/newpage.html")
+    else:
+        title = request.POST['title']
+        content = request.POST['content']
+        if util.get_entry(title) is not None:
+            return render(request, "encyclopedia/errorpage.html", {
+                "title": title,
+                "message": "Page already exists!"
+            })
+        else:
+            util.save_entry(title, content)
+            return render(request, "encyclopedia/content.html", {
+                "title": title,
+                "content":convertMd(title)
+            })
+        
